@@ -25,36 +25,16 @@ public class P6spyPrettySqlFormatter implements MessageFormattingStrategy {
 	    if (mapperId == null) {
 	        mapperId = category; // 기본 fallback
 	    }
+	    // 패키지 제거: kr.co.nova.concert.mapper.ConcertMapper.getConcertList → ConcertMapper.getConcertList
+	    mapperId = mapperId.substring(mapperId.lastIndexOf('.', mapperId.lastIndexOf('.') - 1) + 1);
 
 
 	    return NEW_LINE + NEW_LINE +"/* [" + mapperId + "] */\n" + formattedSql;
 		}
 
-    private String formatSql(String sql) {
-        String trimmed = sql.trim();
-
-        // DDL은 CREATE, ALTER, COMMENT 기준 줄바꿈
-        if (trimmed.toLowerCase(Locale.ROOT).startsWith("create") ||
-            trimmed.toLowerCase(Locale.ROOT).startsWith("alter") ||
-            trimmed.toLowerCase(Locale.ROOT).startsWith("comment")) {
-
-            return trimmed.replaceAll("(?i)\\b(CREATE|ALTER|COMMENT)\\b", "\n$1")
-                          .toUpperCase(Locale.ROOT);
-        }
-
-        // SELECT, UPDATE, DELETE 등 일반 쿼리 키워드 기준 줄바꿈
-        return trimmed.replaceAll("(?i)\\b(FROM|WHERE|GROUP BY|ORDER BY|JOIN|ON|AND|OR)\\b", "\n$1")
-                      .toUpperCase(Locale.ROOT);
-    }
-
-
-    private boolean isStatement(String category) {
-        return category != null && category.equalsIgnoreCase("statement");
-    }
-
     private String alignColumns(String sql) {
         sql = sql.replace("\t", "    "); // 탭 → 공백
-        String[] lines = sql.split("\n");
+        String[] lines = sql.lines().filter(line -> !line.isBlank()).toArray(String[]::new); // CDATA·동적태그가 남긴 빈 줄 제거
         int maxIdx = 0;
 
         for (String line : lines) {
