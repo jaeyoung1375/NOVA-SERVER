@@ -1,0 +1,34 @@
+name: nova
+services:
+  backend:
+    build: ../        # backend/Dockerfile 위치
+    container_name: backend
+    restart: always
+    env_file:
+      - /home/ubuntu/.env
+    environment:
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD}
+      SPRING_PROFILES_ACTIVE: dev
+      SERVER_PORT: 9090
+    ports:
+      - "9090:9090"
+    volumes:
+      - /home/ubuntu/nova-server/logs:/logs
+      - /home/ubuntu/oracle/wallet:/app/oracle/wallet:ro   # Oracle ADB 지갑 (application-dev.yml TNS_ADMIN)
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7
+    container_name: redis
+    restart: always
+    command: redis-server --requirepass "${REDIS_PASSWORD}"
+    ports:
+      - "6379:6379"     # 외부에서 접속 안 할 거면 이 줄 삭제 가능
+    volumes:
+      - redisdata:/data
+
+volumes:
+  redisdata:
