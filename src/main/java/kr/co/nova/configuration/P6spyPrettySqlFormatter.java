@@ -25,7 +25,7 @@ public class P6spyPrettySqlFormatter implements MessageFormattingStrategy {
 	    if (mapperId == null) {
 	        mapperId = category; // 기본 fallback
 	    }
-	    // 패키지 제거: kr.co.nova.concert.mapper.ConcertMapper.getConcertList → ConcertMapper.getConcertList
+	    // 패키지 제거: kr.co.nova.api.concert.mapper.ConcertMapper.getConcertList → ConcertMapper.getConcertList
 	    mapperId = mapperId.substring(mapperId.lastIndexOf('.', mapperId.lastIndexOf('.') - 1) + 1);
 
 
